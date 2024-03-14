@@ -1,0 +1,42 @@
+﻿@inherits LayoutComponentBase
+
+
+<style>
+
+
+    .darkor {
+        transition: background-color ease 0.4s;
+        transition: background ease 0.4s;
+        background-color: #252526;
+    }
+</style>
+<div class="page  @theme">
+
+    <div class="sidebar ">
+        <NavMenu/>
+    </div>
+
+
+    <main >
+        <div class="top-row px-4">
+            <label><input @onclick="themeChange" class="mui-switch mui-switch-anim" type="checkbox"></label>
+
+            <a href="https://blingcc.eu.org" target="_blank" style="color: #e7f1ff">About</a>
+        </div>
+        
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code
+{
+    private string theme = "";
+    private bool dark = false;
+    private void themeChange()
+    {
+        dark = !dark;
+        theme = dark ? "darkor " : "";
+    }
+}

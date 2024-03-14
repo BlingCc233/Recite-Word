@@ -1,0 +1,189 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, #444444 0%, #222222 70%);
+}
+
+.top-row {
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    justify-content: flex-end;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+    .top-row ::deep a, .top-row ::deep .btn-link {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+        text-decoration: none;
+    }
+
+        .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .top-row ::deep a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+@media (max-width: 640.98px) {
+    .top-row {
+        display:none;
+        justify-content: space-between;
+    }
+
+        .top-row ::deep a, .top-row ::deep .btn-link {
+            margin-left: 0;
+        }
+
+    label {
+        display: none;
+        vertical-align: middle;
+    }
+
+
+}
+
+@media (min-width: 641px) {
+    .page {
+        display: flex;
+        flex-direction: row;
+        height:100vh;
+    }
+
+        .page div:first-child {
+            align-self: center;
+        }
+
+    .sidebar {
+        margin-left: 20px;
+        width: 230px;
+        height: 50vh; /* Set the height to 70% of the page container */
+        position: relative; /* Changed from sticky to relative */
+        border-radius: 20px;
+        align-self: center;
+        /*top: 15%;*/
+    }
+
+
+    
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-image: linear-gradient(270deg, #444444 0%, #222222 70%);
+    }
+
+        .top-row.auth ::deep a:first-child {
+            flex: 1;
+            text-align: right;
+            width: 0;
+        }
+
+    .top-row, article {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+
+
+    label {
+        display: block;
+        vertical-align: middle;
+    }
+
+    label, input, select {
+        vertical-align: middle;
+    }
+
+    .mui-switch {
+        width: 52px;
+        height: 31px;
+        position: relative;
+        border: 1px solid #dfdfdf;
+        background-color: #fdfdfd;
+        box-shadow: #dfdfdf 0 0 0 0 inset;
+        border-radius: 20px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        background-clip: content-box;
+        display: inline-block;
+        -webkit-appearance: none;
+        user-select: none;
+        outline: none;
+    }
+
+        .mui-switch:before {
+            content: '';
+            width: 29px;
+            height: 29px;
+            position: absolute;
+            top: 0px;
+            left: 0;
+            border-radius: 20px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .mui-switch:checked {
+            border-color: #1a1e21;
+            box-shadow: #1a1e21 0 0 0 16px inset;
+            background-color: #1a1e21;
+        }
+
+            .mui-switch:checked:before {
+                left: 21px;
+            }
+
+        .mui-switch.mui-switch-animbg {
+            transition: background-color ease 0.4s;
+        }
+
+            .mui-switch.mui-switch-animbg:before {
+                transition: left 0.3s;
+            }
+
+            .mui-switch.mui-switch-animbg:checked {
+                box-shadow: #dfdfdf 0 0 0 0 inset;
+                background-color: #1a1e21;
+                transition: border-color 0.4s, background-color ease 0.4s;
+            }
+
+                .mui-switch.mui-switch-animbg:checked:before {
+                    transition: left 0.3s;
+                }
+
+        .mui-switch.mui-switch-anim {
+            transition: border cubic-bezier(0, 0, 0, 1) 0.4s, box-shadow cubic-bezier(0, 0, 0, 1) 0.4s;
+        }
+
+            .mui-switch.mui-switch-anim:before {
+                transition: left 0.3s;
+            }
+
+            .mui-switch.mui-switch-anim:checked {
+                box-shadow: #1a1e21 0 0 0 16px inset;
+                background-color: #1a1e21;
+                transition: border ease 0.4s, box-shadow ease 0.4s, background-color ease 1.2s;
+            }
+
+                .mui-switch.mui-switch-anim:checked:before {
+                    transition: left 0.3s;
+                }
+}

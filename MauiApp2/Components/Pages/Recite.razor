@@ -1,0 +1,448 @@
+﻿@page "/Recite/{bookid}"
+@using System.Text.RegularExpressions
+@using MauiApp2.serveyer
+@inject GlobalStateService GlobalState
+
+
+<PageTitle>@GetTitle()</PageTitle>
+
+<style>
+    .btn-black {
+        cursor: pointer;
+        position: relative;
+        color: rgba(44,44,44,0);
+        font-size: 1rem;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        padding: 15px 20px;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+    }
+
+        .btn-black:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            border-radius: 28px;
+            background: rgba(40,40,40,0.86);
+            width: 56px;
+            height: 56px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-black span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-black svg {
+            position: relative;
+            top: 0;
+            margin-left: 10px;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke: #f5f5f5;
+            stroke-width: 2;
+            transform: translateX(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .btn-black:hover:before {
+            width: 100%;
+            background: #282828;
+        }
+
+        .btn-black:hover svg {
+            transform: translateX(0);
+        }
+
+        .btn-black:hover,
+        .btn-black:focus {
+            color: #f5f5f5;
+        }
+
+        .btn-black:active {
+            color: #f5f5f5;
+            transform: scale(0.96);
+        }
+
+    .btn-black-l {
+        cursor: pointer;
+        position: relative;
+        color: rgba(44,44,44,0);
+        font-size: 1rem;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        padding: 15px 20px;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+    }
+
+        .btn-black-l:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            border-radius: 28px;
+            background: rgba(40,40,40,0.86);
+            width: 56px;
+            height: 56px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-black-l span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-black-l:hover:after {
+            width: 100%;
+            background: #282828;
+        }
+
+        .btn-black-l:hover,
+        .btn-black-l:focus {
+            color: #f5f5f5;
+        }
+
+        .btn-black-l:active {
+            color: #f5f5f5;
+            transform: scale(0.96);
+        }
+
+    .word {
+        height: 400px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(255,255,255);
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
+        transition: all 0.3s ease;
+        user-select: none;
+        font-family: eng,'MiSans',sans-serif;
+    }
+
+        .word:active {
+            transform: scale(1.1);
+        }
+</style>
+
+<h3>@GetTitle()</h3>
+
+
+<div class="d-flex justify-content-center row">
+    <div class=" text-center col-md-6 mt-5">
+        <div @onclick="Check" class=" word" style="padding-left: 20px;padding-right: 20px;">
+            <h1 class="text-black">@nowWord</h1>
+        </div>
+    </div>
+    <div class=" d-flex justify-content-between mt-5">
+        <div @onclick="OnPreviousClick" class="btn-black-l @btnClick">
+            <span>
+                <i class="bi bi-chevron-left me-2"></i>上一个
+            </span>
+        </div>
+        <div style="padding-top: 15px;font-size: 20px;color: #333333;">
+            @index
+            /
+            @WhichTot()
+        </div>
+        <div @onclick="OnNextClick" class="btn-black @btnClick">
+            <span>
+                下一个
+            </span>
+            <svg width="13px" height="10px" viewBox="0 0 13 10">
+                <path d="M1,5 L11,5"></path>
+                <polyline points="8 1 12 5 8 9"></polyline>
+            </svg>
+        </div>
+    </div>
+</div>
+
+@* <div class="container-fluid"> *@
+@*     <div role="status"> *@
+@*         @for (int i in Range ) *@
+@*         { *@
+@*             if (wordGroup.Length >= 2) *@
+@*             { *@
+@*                 <div>@wordGroup[0] - @wordGroup[1]</div> *@
+@*             } *@
+@*         } *@
+@*     </div> *@
+@*     </div> *@
+
+
+
+@code {
+    [Parameter] public string BookId { get; set; }
+
+
+
+    private List<string[]> allWords = new List<string[]>();
+    private List<int> randomNumbers = new List<int>();
+    private string nowWord = "";
+    private int index = 1;
+    private int revise = 1;
+    private bool flag = false;
+
+    private void Word()
+    {
+        if (flag) nowWord = allWords[randomNumbers[index - 1]][1];
+        else nowWord = allWords[randomNumbers[index - 1]][0];
+
+    }
+
+    private void Check()
+    {
+        flag = !flag;
+        if (flag) nowWord = allWords[randomNumbers[index - 1]][1];
+        else nowWord = allWords[randomNumbers[index - 1]][0];
+    }
+
+    private void GenerateRandomNumbers()
+    {
+        if (randomNumbers == null)
+        {
+            randomNumbers = new List<int>();
+
+        }
+        randomNumbers.Clear(); // 清空之前的随机数列
+        int length = allWords.Count; // 获取allWords的长度
+        Random rnd = new Random();
+
+        while (randomNumbers.Count < length)
+        {
+            int number = rnd.Next(1, length + 1); // 生成1到length之间的随机数
+            if (!randomNumbers.Contains(number)) // 确保没有重复
+            {
+                randomNumbers.Add(number);
+            }
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        // Assuming the file is a .txt file
+        if (int.Parse(BookId) == 1)
+        {
+            var filePath = $"./{BookId}.txt";
+            try
+            {
+                // Open the file for reading
+                using var reader = new StreamReader(filePath);
+                var content = await reader.ReadToEndAsync();
+                var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Define the regular expression to match English words and corresponding Chinese translations
+                var rgx = new Regex(@"\t(.*?)\t(.*?)\t");
+
+                foreach (var line in lines)
+                {
+                    // Use the regular expression to split each line
+                    var matches = rgx.Matches(line);
+                    foreach (Match match in matches)
+                    {
+                        if (match.Groups.Count >= 3)
+                        {
+                            // Add the English word and Chinese translation to the allWords list
+                            allWords.Add(new string[] { match.Groups[1].Value, match.Groups[2].Value });
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during file reading
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
+        }
+        else if (int.Parse(BookId) == 3)
+        {
+            var filePath = $"./{BookId}.txt";
+            try
+            {
+                // Open the file for reading
+                using var reader = new StreamReader(filePath);
+                var content = await reader.ReadToEndAsync();
+                var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Define the regular expression to match English words and corresponding Chinese translations
+
+                foreach (var line in lines)
+                {
+                    string[] values = line.Split(',');
+                    allWords.Add(values);
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during file reading
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
+        }
+        else if (int.Parse(BookId) == 2 || int.Parse(BookId) == 4)
+        {
+            var filePath = $"./2.txt";
+            try
+            {
+                using var reader = new StreamReader(filePath);
+                var content = await reader.ReadToEndAsync();
+                var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                // Define the regular expression to match English words and corresponding Chinese translations
+                int count = 0;
+                string tmp = "";
+                string chi = "";
+                bool flag = false;
+                foreach (var line in lines)
+                {
+                    if (line.StartsWith("\""))
+                    {
+                        flag = true;
+                        chi += line;
+                        continue;
+                    }
+
+                    if (!line.StartsWith("\n") && !flag)
+                    {
+                        count++;
+                    }
+
+                    if (flag && !line.EndsWith("\""))
+                    {
+                        chi += line;
+                        continue; ;
+                    }
+
+                    if (flag && line.EndsWith("\""))
+                    {
+                        chi += line;
+                        flag = false;
+                        count++;
+                    }
+                    if (count % 2 == 1)
+                    {
+                        tmp = line;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(chi))
+                        {
+                            chi = line;
+                        }
+                        allWords.Add(new string[] { tmp, chi });
+                        tmp = "";
+                        chi = "";
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during file reading
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
+        }
+
+        if (GlobalState.indexnow.TryGetValue(BookId, out index))
+        {
+
+        }
+        else
+        {
+            index = 1;
+        }
+        if (GlobalState.ordernow.TryGetValue(BookId, out randomNumbers))
+        {
+        }
+        else
+        {
+            GenerateRandomNumbers();
+            GlobalState.ordernow[BookId] = randomNumbers;
+        }
+        nowWord = allWords[randomNumbers[index - 1]][0];
+    }
+
+    private string GetTitle()
+    {
+        switch (BookId)
+        {
+            case "1":
+                return "四级单词";
+            case "2":
+                return "六级单词";
+            case "3":
+                return "雅思单词";
+            default:
+                return "单词背诵";
+        }
+    }
+
+    private string WhichTot()
+    {
+        return allWords.Count.ToString();
+
+    }
+
+    private string btnClick = "";
+    private void OnPreviousClick()
+    {
+        // 在这里处理点击事件
+        btnClick = "btn-click";
+        if (index == 1) return;
+        index--;
+        GlobalState.indexnow[BookId] = index;
+        Word();
+
+    }
+
+    private void OnNextClick()
+    {
+        // 在这里处理点击事件
+        btnClick = "btn-click";
+        if (index == int.Parse(WhichTot()))
+        {
+            return;
+        }
+        index++;
+        // if (revise < index % 10)
+        // {
+        //     revise++;
+        // }
+        GlobalState.indexnow[BookId] = index;
+
+        Word();
+
+    }
+
+
+
+
+}
+
+
+
+

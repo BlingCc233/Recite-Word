@@ -1,0 +1,26 @@
+﻿@using MauiApp2.serveyer
+@inject GlobalStateService GlobalState
+
+@code {
+    [Parameter]
+    public IBrowserFile file { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    private int voca()
+    {
+        Random random = new Random();
+        return random.Next(2000, 5001);
+    }
+
+}
+
+<div class="col-md-4 mt-3">
+    <div class="border bg-light" style="border-radius: 20px;">
+        <a style="text-decoration: none;color: inherit;" href="/Recite/4">
+            <div class="p-3 font-weight-bold text-lg">@Text</div>
+            <div class="p-3 text-muted font-weight-light text-sm">词汇量：@voca()</div>
+        </a>
+    </div>
+</div>

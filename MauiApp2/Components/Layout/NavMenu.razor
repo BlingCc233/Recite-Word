@@ -1,0 +1,29 @@
+﻿<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.4.0/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="" style="font-family: '幼圆','MiSans', sans-serif;font-size: larger;font-weight: bold; ">背了单词</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door-fill" style="font-size: 22px; margin-bottom: 26px;"></i> 单词书
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <i class="bi bi-controller" style="font-size: 22px; margin-bottom: 26px;"></i> 单词游戏
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="weather">
+                <i class="bi bi-book-fill" style="font-size: 22px; margin-bottom: 26px;"></i> 英文阅读
+            </NavLink>
+        </div>
+    </nav>
+</div>
