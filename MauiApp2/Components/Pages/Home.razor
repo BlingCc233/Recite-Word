@@ -15,7 +15,7 @@
         height: 100vh;
         background-color: rgba(0,0,0,0.5);
     }
-    
+
     .modal-content {
         position: fixed;
         top: 50%;
@@ -32,27 +32,37 @@
         justify-content: center;
         align-items: center;
     }
-    .inputer{
-        outline-style: none ;
-        border: 1px solid #ccc; 
+
+    .inputer {
+        outline-style: none;
+        border: 1px solid #ccc;
         border-radius: 15px;
         padding: 14px 14px;
         width: 60%;
         font-size: 24px;
+    }
+
+    .darkor {
+        transition: background-color ease 0.4s;
+        transition: background ease 0.4s;
+        background-color: #252526;
+        color: #DDD;
+        border: 1px solid #ccc;
     }
 </style>
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="p-3 border bg-light text-center" style="border-radius: 20px;"> <!-- 添加 text-center 类 -->
+            <div class="p-3 @darker text-center" style="border-radius: 20px;">
+                <!-- 添加 text-center 类 -->
                 <i class="bi bi-book me-2"></i>默认单词表
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-4 mt-3">
-            <div class="border bg-light" style="border-radius: 20px;">
+            <div class="@darker" style="border-radius: 20px;">
                 <a style="text-decoration: none;color: inherit;" href="/Recite/1">
                     <div class="p-3 font-weight-bold text-lg">CET4</div>
                     <div class="p-3 text-muted font-weight-light text-sm">词汇量：1409</div>
@@ -60,52 +70,55 @@
             </div>
         </div>
         <div class="col-md-4 mt-3">
-            <div class="border bg-light" style="border-radius: 20px;">
+            <div class="@darker" style="border-radius: 20px;">
                 <a style="text-decoration: none;color: inherit;" href="/Recite/2">
                     <div class="p-3 font-weight-bold text-lg">CET6</div>
                     <div class="p-3 text-muted font-weight-light text-sm">词汇量：4446</div>
                 </a>
-            </div>        
+            </div>
         </div>
         <div class="col-md-4 mt-3">
-            <div class="border bg-light" style="border-radius: 20px;">
+            <div class="@darker" style="border-radius: 20px;">
                 <a style="text-decoration: none;color: inherit;" href="/Recite/3">
                     <div class="p-3 font-weight-bold text-lg">IETLS</div>
                     <div class="p-3 text-muted font-weight-light text-sm">词汇量：6187</div>
                 </a>
-            </div>        
+            </div>
         </div>
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="p-3 border bg-light text-center" style="border-radius: 20px;"> <!-- 添加 text-center 类 -->
+            <div class="p-3 @darker text-center" style="border-radius: 20px;">
+                <!-- 添加 text-center 类 -->
                 <i class="bi bi-list-nested me-2"></i>自定义单词表
             </div>
         </div>
     </div>
-    
+
 
     <div class="row">
-        @if(defultList != null){
-            @for (int i = 0; i < defultList.Count; i++)
+        @if (defultList != null)
+        {
+            @foreach (KeyValuePair<string, string> entry in defultList)
+
             {
-                <Defult File=@defultFile[i] Text=@defultList[i]/>
+                <Defult File=@entry.Value Text=@entry.Key />
             }
         }
     </div>
-    
+
     <div class="row mt-3">
         <div class="col-md-4">
-            <div class="border bg-light d-flex align-items-center justify-content-center" style="border-radius: 20px; height: 100px;">
+            <div class="@darker d-flex align-items-center justify-content-center" style="border-radius: 20px; height: 100px;">
                 <label for="fileInput" class="d-flex align-items-center justify-content-center" style="cursor: pointer;">
                     <span class="bi bi-plus-circle-fill my-5" style="font-size: 40px;"></span>
                 </label>
-                <InputFile id="fileInput" accept=".txt" OnChange="@OnImportFile" style="display: none;" />
+                <InputFile id="fileInput" accept=".csv" OnChange="@OnImportFile" style="display: none;" />
             </div>
         </div>
     </div>
 
-    
+
     @* <div class="container-fluid"> *@
     @*     <div role="status"> *@
     @*         @foreach (var wordGroup in allWords) *@
@@ -125,24 +138,22 @@
     <div class="modal-backdrop" @onclick="HideModal">
     </div>
     <div class="modal-content">
-        <input class="inputer" type="text" @onchange="SaveName" placeholder="输入单词表名"/>
+        <input class="inputer" type="text" @onchange="SaveName" placeholder="输入单词表名" />
     </div>
 }
 
 
 @code {
-    private List<string> defultList = new List<string>();
+    private Dictionary<string, string> defultList = new Dictionary<string, string>();
 
-    public List<IBrowserFile> defultFile = new List<IBrowserFile>();
-    
+
     public List<string[]> allWords = new List<string[]>();
-    
+
     private bool showModal = false;
+    private string curFile;
     private string vocName;
 
 
-
-    
     private void ShowModal()
     {
         showModal = true;
@@ -158,93 +169,85 @@
         vocName = e.Value.ToString();
         if (vocName.StartsWith(" ")) vocName = "defult";
         Console.WriteLine(vocName);
-        defultList.Add(vocName);
-        GlobalState.GlobalFileName = defultList;
+        GlobalState.GlobalFile[vocName] = curFile;
         HideModal();
     }
-    
+
+    private string darker;
+
     protected override async Task OnInitializedAsync()
     {
+
+        darker = GlobalState.dark ? "darkor" : "border bg-light";
+
+
         if (GlobalState.GlobalFile != null)
         {
-            defultFile = GlobalState.GlobalFile;
-
-        }
-
-        if (GlobalState.GlobalFileName != null)
-        {
-            defultList = GlobalState.GlobalFileName;
-
+            defultList = GlobalState.GlobalFile;
         }
     }
-    
+
     private async Task OnImportFile(InputFileChangeEventArgs e)
     {
         var file = e.File;
         if (file != null)
         {
-            defultFile.Add(file);
-            GlobalState.GlobalFile = defultFile;
             ShowModal();
-            try
+            using var reader = new StreamReader(file.OpenReadStream());
+            var content = await reader.ReadToEndAsync();
+            curFile = content;
+            GlobalState.GlobalFile[vocName] = curFile;
+
+            var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            // Define the regular expression to match English words and corresponding Chinese translations
+            int count = 0;
+            string tmp = "";
+            string chi = "";
+            bool flag = false;
+            foreach (var line in lines)
             {
-                using var reader = new StreamReader(file.OpenReadStream());
-                var content = await reader.ReadToEndAsync();
-                var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                // Define the regular expression to match English words and corresponding Chinese translations
-                int count = 0;
-                string tmp = "";
-                string chi = "";
-                bool flag = false;
-                foreach (var line in lines)
+                if (line.StartsWith("\""))
                 {
-                    if (line.StartsWith("\""))
-                    {
-                        flag = true;
-                        chi += line;
-                        continue;
-                    }
-
-                    if (!line.StartsWith("\n") && !flag)
-                    {
-                        count++;
-                    }
-
-                    if (flag && !line.EndsWith("\""))
-                    {
-                        chi += line;
-                        continue;;
-                    }
-
-                    if (flag && line.EndsWith("\""))
-                    {
-                        chi += line;
-                        flag = false;
-                        count++;
-                    }
-                    if (count % 2 == 1)
-                    {
-                            tmp = line;
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(chi))
-                        {
-                            chi = line;
-                        }
-                        allWords.Add(new string[] { tmp, chi });
-                        tmp = "";
-                        chi = "";
-                    }
-
-    
+                    flag = true;
+                    chi += line;
+                    continue;
                 }
+
+                if (!line.StartsWith("\n") && !flag)
+                {
+                    count++;
+                }
+
+                if (flag && !line.EndsWith("\""))
+                {
+                    chi += line;
+                    continue; ;
+                }
+
+                if (flag && line.EndsWith("\""))
+                {
+                    chi += line;
+                    flag = false;
+                    count++;
+                }
+                if (count % 2 == 1)
+                {
+                    tmp = line;
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(chi))
+                    {
+                        chi = line;
+                    }
+                    allWords.Add(new string[] { tmp, chi });
+                    tmp = "";
+                    chi = "";
+                }
+
+
             }
-            catch (Exception ex)
-            {
-                // Handle any errors that occur during file reading
-                Console.WriteLine($"Error reading file: {ex.Message}");
-            }
+
         }
-        }
+    }
 }

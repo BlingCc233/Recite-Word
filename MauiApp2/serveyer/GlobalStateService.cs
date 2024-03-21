@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace MauiApp2.serveyer;
 
+
 public class GlobalStateService
 {
-    public List<IBrowserFile> GlobalFile { get; set; }
-    public List<string> GlobalFileName { get; set; }
+    public bool dark { get; set; }
+    public Dictionary<string, string> GlobalFile { get; set; }
 
     public Dictionary<string, int> indexnow { get; set; }
 
@@ -20,6 +21,7 @@ public class GlobalStateService
     {
         indexnow = new Dictionary<string, int>();
         ordernow = new Dictionary<string, List<int>>();
+        GlobalFile = new Dictionary<string, string>();
     }
     // 可以添加更多的全局变量或方法
 }

@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@using MauiApp2.serveyer
+@inject GlobalStateService GlobalState
 
 
 <style>
@@ -8,6 +10,10 @@
         transition: background-color ease 0.4s;
         transition: background ease 0.4s;
         background-color: #252526;
+    }
+    .brighter{
+        transition: background-color ease 0.4s;
+        background-color: #fff;
     }
 </style>
 <div class="page  @theme">
@@ -33,10 +39,9 @@
 @code
 {
     private string theme = "";
-    private bool dark = false;
     private void themeChange()
     {
-        dark = !dark;
-        theme = dark ? "darkor " : "";
+        GlobalState.dark = !GlobalState.dark;
+        theme = GlobalState.dark ? "darkor " : "brighter";
     }
 }

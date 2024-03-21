@@ -1,10 +1,9 @@
-﻿@page "/Recite/{bookid}"
-@using System.Text.RegularExpressions
+﻿@page "/DefultRecite/{bookname}"
 @using MauiApp2.serveyer
 @inject GlobalStateService GlobalState
 
 
-<PageTitle>@GetTitle()</PageTitle>
+<PageTitle>@BookName</PageTitle>
 
 <style>
     .btn-black {
@@ -145,7 +144,7 @@
         }
 </style>
 
-<h3>@GetTitle()</h3>
+<h3>@BookName</h3>
 
 
 <div class="d-flex justify-content-center row">
@@ -192,7 +191,7 @@
 
 
 @code {
-    [Parameter] public string BookId { get; set; }
+    [Parameter] public string BookName { get; set; }
 
 
 
@@ -205,15 +204,8 @@
 
     private void Word()
     {
-        try
-        {
-            if (flag) nowWord = allWords[randomNumbers[index - 1]][1];
-            else nowWord = allWords[randomNumbers[index - 1]][0];
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+        if (flag) nowWord = allWords[randomNumbers[index - 1]][1];
+        else nowWord = allWords[randomNumbers[index - 1]][0];
 
     }
 
@@ -221,6 +213,7 @@
     {
         try
         {
+
             flag = !flag;
             if (flag) nowWord = allWords[randomNumbers[index - 1]][1];
             else nowWord = allWords[randomNumbers[index - 1]][0];
@@ -228,6 +221,7 @@
         catch (Exception e)
         {
             Console.WriteLine(e);
+            throw;
         }
     }
 
@@ -244,7 +238,7 @@
 
         while (randomNumbers.Count < length)
         {
-            int number = rnd.Next(1, length + 1); // 生成1到length之间的随机数
+            int number = rnd.Next(0, length); // 生成1到length之间的随机数
             if (!randomNumbers.Contains(number)) // 确保没有重复
             {
                 randomNumbers.Add(number);
@@ -255,170 +249,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-        // Assuming the file is a .txt file
-        if (int.Parse(BookId) == 1)
-        {
-            var filePath = $"./{BookId}.txt";
-            try
-            {
-                // Open the file for reading
-                using var reader = new StreamReader(filePath);
-                var content = await reader.ReadToEndAsync();
-                var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Define the regular expression to match English words and corresponding Chinese translations
-                var rgx = new Regex(@"\t(.*?)\t(.*?)\t");
-
-                foreach (var line in lines)
-                {
-                    // Use the regular expression to split each line
-                    var matches = rgx.Matches(line);
-                    foreach (Match match in matches)
-                    {
-                        if (match.Groups.Count >= 3)
-                        {
-                            // Add the English word and Chinese translation to the allWords list
-                            allWords.Add(new string[] { match.Groups[1].Value, match.Groups[2].Value });
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors that occur during file reading
-                Console.WriteLine($"Error reading file: {ex.Message}");
-            }
-        }
-        else if (int.Parse(BookId) == 3)
-        {
-            var filePath = $"./{BookId}.txt";
-            try
-            {
-                using var reader = new StreamReader(filePath);
-                var content = await reader.ReadToEndAsync();
-                var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                // Define the regular expression to match English words and corresponding Chinese translations
-                int count = 0;
-                string tmp = "";
-                string chi = "";
-                bool flag = false;
-                foreach (var line in lines)
-                {
-                    if (line.StartsWith("\""))
-                    {
-                        flag = true;
-                        chi += line;
-                        continue;
-                    }
-
-                    if (!line.StartsWith("\n") && !flag)
-                    {
-                        count++;
-                    }
-
-                    if (flag && !line.EndsWith("\""))
-                    {
-                        chi += line;
-                        continue; ;
-                    }
-
-                    if (flag && line.EndsWith("\""))
-                    {
-                        chi += line;
-                        flag = false;
-                        count++;
-                    }
-                    if (count % 2 == 1)
-                    {
-                        tmp = line;
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(chi))
-                        {
-                            chi = line;
-                        }
-                        allWords.Add(new string[] { tmp, chi });
-                        tmp = "";
-                        chi = "";
-                    }
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors that occur during file reading
-                Console.WriteLine($"Error reading file: {ex.Message}");
-            }
-        }
-        else if (int.Parse(BookId) == 2 || int.Parse(BookId) == 4)
-        {
-            var filePath = $"./2.txt";
-            try
-            {
-                using var reader = new StreamReader(filePath);
-                var content = await reader.ReadToEndAsync();
-                var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                // Define the regular expression to match English words and corresponding Chinese translations
-                int count = 0;
-                string tmp = "";
-                string chi = "";
-                bool flag = false;
-                foreach (var line in lines)
-                {
-                    if (line.StartsWith("\""))
-                    {
-                        flag = true;
-                        chi += line;
-                        continue;
-                    }
-
-                    if (!line.StartsWith("\n") && !flag)
-                    {
-                        count++;
-                    }
-
-                    if (flag && !line.EndsWith("\""))
-                    {
-                        chi += line;
-                        continue; ;
-                    }
-
-                    if (flag && line.EndsWith("\""))
-                    {
-                        chi += line;
-                        flag = false;
-                        count++;
-                    }
-                    if (count % 2 == 1)
-                    {
-                        tmp = line;
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(chi))
-                        {
-                            chi = line;
-                        }
-                        allWords.Add(new string[] { tmp, chi });
-                        tmp = "";
-                        chi = "";
-                    }
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors that occur during file reading
-                Console.WriteLine($"Error reading file: {ex.Message}");
-            }
-        }
-
-        if (GlobalState.indexnow.TryGetValue(BookId, out index))
+        if (GlobalState.indexnow.TryGetValue(BookName, out index))
         {
 
         }
@@ -426,31 +257,101 @@
         {
             index = 1;
         }
-        if (GlobalState.ordernow.TryGetValue(BookId, out randomNumbers))
+
+        Console.WriteLine(BookName);
+
+
+        try
+        {
+            var file = GlobalState.GlobalFile[BookName];
+
+
+            var content = file;
+            var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            // Define the regular expression to match English words and corresponding Chinese translations
+            int count = 0;
+            string tmp = "";
+            string chi = "";
+            bool flag = false;
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("\""))
+                {
+                    flag = true;
+                    chi += line;
+                    continue;
+                }
+
+                if (!line.StartsWith("\n") && !flag)
+                {
+                    count++;
+                }
+
+                if (flag && !line.EndsWith("\""))
+                {
+                    chi += line;
+                    continue;
+
+                }
+
+                if (flag && line.EndsWith("\""))
+                {
+                    chi += line;
+                    flag = false;
+                    count++;
+                }
+
+                if (count % 2 == 1)
+                {
+                    tmp = line;
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(chi))
+                    {
+                        chi = line;
+                    }
+
+                    allWords.Add(new string[] { tmp, chi });
+                    tmp = "";
+                    chi = "";
+                }
+
+
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors that occur during file reading
+            Console.WriteLine($"Error reading file: {ex.Message}");
+        }
+
+
+
+        if (GlobalState.ordernow.TryGetValue(BookName, out randomNumbers))
         {
         }
         else
         {
             GenerateRandomNumbers();
-            GlobalState.ordernow[BookId] = randomNumbers;
+            GlobalState.ordernow[BookName] = randomNumbers;
         }
+
+        // foreach (var x in randomNumbers)
+        // {
+        //     Console.WriteLine(allWords[x][0]);
+        //     Console.WriteLine(allWords[x][1]);
+        //     Console.WriteLine(randomNumbers.IndexOf(x));
+        //
+        // }
+        Console.WriteLine(index);
         nowWord = allWords[randomNumbers[index - 1]][0];
     }
 
-    private string GetTitle()
-    {
-        switch (BookId)
-        {
-            case "1":
-                return "四级单词";
-            case "2":
-                return "六级单词";
-            case "3":
-                return "雅思单词";
-            default:
-                return "单词背诵";
-        }
-    }
+
+
+
+
 
     private string WhichTot()
     {
@@ -465,7 +366,7 @@
         btnClick = "btn-click";
         if (index == 1) return;
         index--;
-        GlobalState.indexnow[BookId] = index;
+        GlobalState.indexnow[BookName] = index;
         Word();
 
     }
@@ -483,7 +384,7 @@
         // {
         //     revise++;
         // }
-        GlobalState.indexnow[BookId] = index;
+        GlobalState.indexnow[BookName] = index;
 
         Word();
 

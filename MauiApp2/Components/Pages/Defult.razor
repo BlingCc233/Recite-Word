@@ -3,24 +3,56 @@
 
 @code {
     [Parameter]
-    public IBrowserFile file { get; set; }
+    public string file { get; set; }
 
     [Parameter]
     public string Text { get; set; }
 
-    private int voca()
+
+
+    private int voca;
+
+    private string darker;
+
+    protected override async Task OnInitializedAsync()
     {
-        Random random = new Random();
-        return random.Next(2000, 5001);
+
+        darker = GlobalState.dark ? "darkor" : "border bg-light";
+
+        var content = file;
+        var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+        voca = lines.Length / 2;
+
     }
+
+    private int voc()
+    {
+        var lines = file.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        return lines.Length / 2;
+    }
+
+
+
+
 
 }
 
+<style>
+    .darkor {
+        transition: background-color ease 0.4s;
+        transition: background ease 0.4s;
+        background-color: #252526;
+        color: #DDD;
+        border: 1px solid #ccc;
+    }
+</style>
+
 <div class="col-md-4 mt-3">
-    <div class="border bg-light" style="border-radius: 20px;">
-        <a style="text-decoration: none;color: inherit;" href="/Recite/4">
+    <div class="@darker" style="border-radius: 20px;">
+        <a style="text-decoration: none;color: inherit;" href="/DefultRecite/@Text">
             <div class="p-3 font-weight-bold text-lg">@Text</div>
-            <div class="p-3 text-muted font-weight-light text-sm">词汇量：@voca()</div>
+            <div class="p-3 text-muted font-weight-light text-sm">词汇量：@voc()</div>
         </a>
     </div>
 </div>
