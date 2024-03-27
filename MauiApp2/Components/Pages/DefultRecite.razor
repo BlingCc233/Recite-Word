@@ -126,7 +126,7 @@
         }
 
     .word {
-        height: 400px;
+        height: 60vh;
         border-radius: 20px;
         display: flex;
         flex-direction: row;
@@ -142,6 +142,16 @@
         .word:active {
             transform: scale(1.1);
         }
+
+    .wordl {
+        transform: scale(1.1);
+        opacity: 20%;
+    }
+
+    .wordnm {
+        transform: scale(1.0);
+        opacity: 100%;
+    }
 </style>
 
 <h3>@BookName</h3>
@@ -149,22 +159,32 @@
 
 <div class="d-flex justify-content-center row">
     <div class="container text-center col-md-6 mt-5 ">
-        <div @onclick="Check" class="word" style="padding-left: 20px;padding-right: 20px;">
+        <div @onmousedown="OnMouseDown" @onmouseup="OnMouseUp" class="word @clicker" style="padding-left: 20px;padding-right: 20px;">
             <h1 class="text-black">@nowWord</h1>
         </div>
     </div>
     <div class=" d-flex justify-content-between mt-5">
-        <div @onclick="OnPreviousClick" class="btn-black-l @btnClick">
+        <div @onmousedown="OnPreviousClickD" @onmouseup="OnPreviousClickU" @onmouseleave="OnPreviousClickU" class="btn-black-l @btnClick">
             <span>
                 <i class="bi bi-chevron-left me-2"></i>上一个
             </span>
         </div>
-        <div style="padding-top: 15px;font-size: 20px;color: #333333;">
-            @index
+        <style>
+            .inputer {
+                outline-style: none;
+                border: none;
+                text-align: right;
+                background-color: transparent;
+                font-size: 20px;
+                color: #555555;
+            }
+        </style>
+        <div style="padding-top: 15px;font-size: 20px;color: #555555;">
+            <span><input class="inputer" style="width: @inplen()px;" type="text" placeholder="@index" @bind="index" /></span>
             /
             @WhichTot()
         </div>
-        <div @onclick="OnNextClick" class="btn-black @btnClick">
+        <div @onmousedown="OnNextClickD" @onmouseup="OnNextClickU" @onmouseleave="OnNextClickU" class="btn-black @btnClick">
             <span>
                 下一个
             </span>
@@ -222,6 +242,77 @@
         {
             Console.WriteLine(e);
             throw;
+        }
+    }
+    private void Look()
+    {
+        try
+        {
+            flag = !flag;
+            if (flag) nowWord = allWords[randomNumbers[index - 1]][1];
+            else nowWord = allWords[randomNumbers[index - 1]][0];
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    private string inplen()
+    {
+        int t = index;
+        int len = 0;
+        while (t != 0)
+        {
+            t /= 10;
+            len++;
+        }
+
+        len = len * 10 + 10;
+        return len.ToString();
+    }
+
+    private CancellationTokenSource pressCancellationTokenSource;
+
+    private bool isPressing = false;
+    private DateTime pressStartTime;
+
+    private TimeSpan longPressDuration = TimeSpan.FromSeconds(0.2);
+
+
+
+    private void OnMouseDown()
+    {
+        pressCancellationTokenSource?.Cancel();
+        pressCancellationTokenSource = new CancellationTokenSource();
+
+        Task.Delay(longPressDuration, pressCancellationTokenSource.Token).ContinueWith(task =>
+        {
+            if (task.IsCompletedSuccessfully && !pressCancellationTokenSource.Token.IsCancellationRequested)
+            {
+                InvokeAsync(() =>
+                {
+                    Look();
+                    StateHasChanged(); // 通知组件状态已更改，需要重新渲染
+                });
+            }
+        }, TaskScheduler.Default);
+    }
+
+    private void OnMouseUp()
+    {
+        pressCancellationTokenSource?.Cancel();
+        if (flag)
+        {
+            InvokeAsync(() =>
+            {
+                Look();
+                StateHasChanged(); // 还原文字并重新渲染
+            });
+        }
+        else
+        {
+            Check();
         }
     }
 
@@ -360,18 +451,29 @@
     }
 
     private string btnClick = "";
-    private void OnPreviousClick()
+
+    private string clicker;
+
+    private void OnPreviousClickD()
     {
         // 在这里处理点击事件
         btnClick = "btn-click";
         if (index == 1) return;
         index--;
         GlobalState.indexnow[BookName] = index;
-        Word();
+        clicker = "wordl";
 
     }
 
-    private void OnNextClick()
+    private void OnPreviousClickU()
+    {
+        Word();
+
+        clicker = "wordnm";
+
+    }
+
+    private void OnNextClickD()
     {
         // 在这里处理点击事件
         btnClick = "btn-click";
@@ -386,10 +488,17 @@
         // }
         GlobalState.indexnow[BookName] = index;
 
-        Word();
+        clicker = "wordl";
 
     }
 
+    private void OnNextClickU()
+    {
+        Word();
+
+        clicker = "wordnm";
+
+    }
 
 
 

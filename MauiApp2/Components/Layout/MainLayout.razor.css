@@ -14,7 +14,7 @@ main {
 
 .top-row {
     background-color: #f7f7f7;
-    border-radius: 10px;
+    border-radius: 20px 0 0 20px;
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
