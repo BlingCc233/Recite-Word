@@ -17,7 +17,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        darker = GlobalState.dark ? "darkor" : "border bg-light";
+        darker = GlobalState.daker ? "darkor" : "border bg-light";
 
         var content = file;
         var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);

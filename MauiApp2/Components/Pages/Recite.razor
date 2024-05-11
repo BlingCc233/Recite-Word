@@ -567,6 +567,8 @@
         if (index == 1) return;
         index--;
         GlobalState.indexnow[BookId] = index;
+
+        GlobalState.SaveStateToFile();
         clicker = "wordl";
 
     }
@@ -594,6 +596,7 @@
         // }
         GlobalState.indexnow[BookId] = index;
 
+        GlobalState.SaveStateToFile();
         clicker = "wordl";
 
 

@@ -461,6 +461,8 @@
         if (index == 1) return;
         index--;
         GlobalState.indexnow[BookName] = index;
+        GlobalState.SaveStateToFile();
+
         clicker = "wordl";
 
     }
@@ -487,6 +489,7 @@
         //     revise++;
         // }
         GlobalState.indexnow[BookName] = index;
+        GlobalState.SaveStateToFile();
 
         clicker = "wordl";
 

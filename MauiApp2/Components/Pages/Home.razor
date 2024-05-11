@@ -178,7 +178,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        darker = GlobalState.dark ? "darkor" : "border bg-light";
+        darker = GlobalState.daker ? "darkor" : "border bg-light";
 
 
         if (GlobalState.GlobalFile != null)
@@ -197,6 +197,8 @@
             var content = await reader.ReadToEndAsync();
             curFile = content;
             GlobalState.GlobalFile[vocName] = curFile;
+            GlobalState.SaveStateToFile();
+
 
             var lines = content.Replace("\r\n", ",").Replace("\n", ",").Replace("\r", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             // Define the regular expression to match English words and corresponding Chinese translations
