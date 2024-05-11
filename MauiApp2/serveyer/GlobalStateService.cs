@@ -8,7 +8,7 @@ namespace MauiApp2.serveyer;
 
 public class GlobalStateService
 {
-    private const string FilePath = "init.json"; // 设置JSON文件的保存路径
+    private const string FilePath = "./init.json"; // 设置JSON文件的保存路径
 
     public bool daker { get; set; }
 
